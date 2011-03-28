@@ -15,6 +15,17 @@ namespace FogCreek
     /// </summary>
     public class BugReport
     {
+        /// <summary>
+        /// The result of a bug report.
+        /// </summary>
+        [Serializable]
+        public class Result
+        {
+            public bool Succeeded { get; set; }
+
+            public string Message { get; set; }
+        }
+
         public string UserName { get; set; }
         public string Project { get; set; }
         public string Area { get; set; }
@@ -75,7 +86,7 @@ namespace FogCreek
         /// Submits this report to FogBugz.
         /// </summary>
         /// <returns></returns>
-        public string Submit( )
+        public Result Submit( )
         {  
             if ( this.Title == null || this.Title.Length == 0 ) throw new ArgumentNullException( "Title" );
             if ( this.Project == null || this.Project.Length == 0 ) throw new ArgumentNullException( "Project" );
@@ -89,7 +100,7 @@ namespace FogCreek
         /// This lets you submit a bug report that saved earlier, e.g., to a file.
         /// </summary>
         /// <returns></returns>
-        public static string Submit( string url, char[] paramData )
+        public static Result Submit( string url, char[] paramData )
         {
             try
             {
@@ -108,11 +119,11 @@ namespace FogCreek
                 // ...and submit it!
                 WebResponse response = request.GetResponse( );
                 if ( response == null )
-                    return null;
+                    return new Result { Succeeded = false };
 
                 return ParseResult( new StreamReader( response.GetResponseStream( ) ).ReadToEnd( ).Trim( ) );
             }
-            catch ( WebException ) { return null; }
+            catch ( WebException e ) { return new Result { Succeeded = false, Message = e.ToString() }; }
         }
 
         /// <summary>
@@ -120,24 +131,20 @@ namespace FogCreek
         /// </summary>
         /// <param name="result"></param>
         /// <returns></returns>
-        private static string ParseResult( string result )
+        private static Result ParseResult( string result )
         {
             // Check for a success result first and just return in that case
             Match ma = Regex.Match( result, "<Success>(?<message>.*)</Success>", RegexOptions.IgnoreCase );
-            if ( ma.Success ) return ma.Groups["message"].Value;
+            if ( ma.Success )
+                return new Result { Succeeded = true, Message = ma.Groups["message"].Value };
 
             // Check for a failure result second, and throw an exception in that case
             ma = Regex.Match( result, "<Error>(?<message>.*)</Error>", RegexOptions.IgnoreCase );
-            if ( ma.Success ) throw new BugReportSubmitException( ma.Groups["message"].Value );
+            if ( ma.Success )
+                return new Result { Succeeded = false, Message = ma.Groups["message"].Value };
 
-            // Unknown format, so throw an InvalidOperationException to note the fact
-            throw new InvalidOperationException( "UnableToProcessReportResult" );
+            // Unknown format...
+            return new Result { Succeeded = false, Message = result };
         }
-    }
-
-    [Serializable]
-    public class BugReportSubmitException : SystemException
-    {
-        public BugReportSubmitException( String message ) : base( message ) { }
     }
 }

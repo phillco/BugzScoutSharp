@@ -74,17 +74,22 @@ namespace SampleProgram.UI
 
         private void bugReporter_RunWorkerCompleted( object sender, RunWorkerCompletedEventArgs e )
         {
-            string response = (string) e.Result;
+            BugReport.Result response = (BugReport.Result) e.Result;
             pbSubmitProgress.Hide( );
             lblSubmitting.Hide( );
-            panelReportSent.Show( );
 
-            if ( response.Length > 0 )
+            if ( response.Succeeded )
             {
-                Height += 30;
-                lblDeveloperResponse.Text = "Developer response: " + response;
-                lblDeveloperResponse.Show( );
+                panelReportSent.Show( );
+                if ( response.Message.Length > 0 )
+                {
+                    Height += 30;
+                    lblDeveloperResponse.Text = "Developer response: " + response;
+                    lblDeveloperResponse.Show( );
+                }
             }
+            else
+                MessageBox.Show( "Sorry - we were unable to send the bug report.", "Send report", MessageBoxButtons.OK, MessageBoxIcon.Warning );
         }
 
         private void hideMainFormTimer_Tick( object sender, EventArgs e )

@@ -49,12 +49,18 @@ namespace SampleProgram.UI
             };
             report.AddMachineDetails( "Feedback sent by" );
             report.Description += Environment.NewLine + tbFeedback.Text;
-            report.Submit( );
+            e.Result = report.Submit( );
         }
 
         private void sendFeedbackWorker_RunWorkerCompleted( object sender, RunWorkerCompletedEventArgs e )
         {
-            MessageBox.Show( "Thanks - your feedback was received successfully!", "Send Feedback", MessageBoxButtons.OK, MessageBoxIcon.Information );
+            BugReport.Result result = (BugReport.Result) e.Result;
+            
+            if ( result.Succeeded )
+                MessageBox.Show( "Thanks - your feedback was received successfully!", "Send Feedback", MessageBoxButtons.OK, MessageBoxIcon.Information );
+            else
+                MessageBox.Show( "Sorry - we were unable to send your feedback.", "Send Feedback", MessageBoxButtons.OK, MessageBoxIcon.Warning );
+
             Close( );
         }
     }

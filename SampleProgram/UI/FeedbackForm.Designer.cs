@@ -44,6 +44,7 @@
             this.tbFeedback.Name = "tbFeedback";
             this.tbFeedback.Size = new System.Drawing.Size( 371, 107 );
             this.tbFeedback.TabIndex = 0;
+            this.tbFeedback.Text = "This app rocks!";
             this.tbFeedback.TextChanged += new System.EventHandler( this.tbFeedback_TextChanged );
             // 
             // label1
