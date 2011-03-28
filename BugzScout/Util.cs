@@ -26,7 +26,7 @@ namespace FogCreek
         }
 
         /// <summary>
-        /// Given an exception, returns where in the code that exception occurred (eg "BugReport:Submit:67").
+        /// Given an exception, returns where in the code that exception occurred (eg "(BugReport.cs:67) Submit()").
         /// </summary>
         public static string GetExceptionLineNumber( Exception e )
         {
@@ -37,7 +37,7 @@ namespace FogCreek
                 {
                     Match ma = reSourceReference.Match( line );
                     if ( ma.Success )
-                        return String.Format( "({0}:{1}:{2})", ma.Groups["filename"].Value, ma.Groups["methodname"].Value, ma.Groups["linenumber"].Value );
+                        return String.Format( "({0}:{1}) {2}()", ma.Groups["filename"].Value, ma.Groups["linenumber"].Value, ma.Groups["methodname"].Value);
                 }
             }
 
