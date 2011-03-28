@@ -17,12 +17,6 @@ namespace SampleProgram
     {
         public const string DEFAULT_BUGZSCOUT_MESSAGE = "Thanks - the report was sent successfully.";
 
-        private static ErrorForm ErrorForm;
-
-        private static string ReportTitle;
-
-        private static string ReportFileName;
-
         public static void HandleUncaughtException( Exception e, bool fatal )
         {            
             // Create an error report.            
@@ -39,11 +33,10 @@ namespace SampleProgram
             report.Description += "Fatal: " + ( fatal ? "Yes" : "No" ) + Environment.NewLine;
             report.Description += "Version: " + Util.GetProgramVersion( ) + " (built on " + Util.GetProgramBuildDate( ).ToShortDateString( ) + ")" + Environment.NewLine;
             report.Description += "OS: " + Util.GetWindowsVersion( ) + Environment.NewLine;
-            ReportTitle = report.Title;
 
             // Show the error form with the report.
-            ErrorForm = new ErrorForm( e, report, fatal );
-            ErrorForm.ShowDialog( );
+            ErrorForm form = new ErrorForm( e, report, fatal );
+            form.ShowDialog( );
         }
 
         public static void RestartApplication( )

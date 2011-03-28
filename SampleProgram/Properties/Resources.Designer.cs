@@ -60,6 +60,13 @@ namespace SampleProgram.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap accept {
+            get {
+                object obj = ResourceManager.GetObject("accept", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap brick_delete {
             get {
                 object obj = ResourceManager.GetObject("brick_delete", resourceCulture);
