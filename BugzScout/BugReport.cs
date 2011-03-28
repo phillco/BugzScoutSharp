@@ -77,7 +77,7 @@ namespace FogCreek
         /// <returns></returns>
         public string Submit( )
         {  
-            if ( this.Title == null || this.Title.Length == 0 ) throw new ArgumentNullException( "Description" );
+            if ( this.Title == null || this.Title.Length == 0 ) throw new ArgumentNullException( "Title" );
             if ( this.Project == null || this.Project.Length == 0 ) throw new ArgumentNullException( "Project" );
             if ( this.Area == null || this.Area.Length == 0 ) throw new ArgumentNullException( "Area" );
 
