@@ -28,9 +28,12 @@ namespace SampleProgram
                 Area = "Reports",
                 DefaultMessage = DEFAULT_BUGZSCOUT_MESSAGE,
             };
-            report.AddMachineDetails( "Opened by" );
+
+            if ( fatal )
+                report.Description += "\nFATAL ERROR\n\n";
+
+            report.AddMachineDetails( "Discovered by" );
             report.AddExceptionDetails( e );
-            report.Description += "Fatal: " + ( fatal ? "Yes" : "No" ) + Environment.NewLine;
             report.Description += "Version: " + Util.GetProgramVersion( ) + " (built on " + Util.GetProgramBuildDate( ).ToShortDateString( ) + ")" + Environment.NewLine;
             report.Description += "OS: " + Util.GetWindowsVersion( ) + Environment.NewLine;
 
