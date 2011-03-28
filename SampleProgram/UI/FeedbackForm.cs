@@ -1,0 +1,61 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Text;
+using System.Windows.Forms;
+using FogCreek;
+
+namespace SampleProgram.UI
+{
+    /// <summary>
+    /// Lets the user submit simple text feedback to FogBugz.
+    /// </summary>
+    public partial class FeedbackForm : Form
+    {
+        public FeedbackForm( )
+        {
+            InitializeComponent( );
+        }
+
+        private void btnCancel_Click( object sender, EventArgs e )
+        {
+            Close( );
+        }
+
+        private void tbFeedback_TextChanged( object sender, EventArgs e )
+        {
+            btnSend.Enabled = tbFeedback.Text.Length > 0;
+        }
+
+        private void btnSend_Click( object sender, EventArgs e )
+        {
+            btnSend.Enabled = false;
+            pbSending.Visible = true;
+            sendFeedbackWorker.RunWorkerAsync( );
+        }
+
+        private void sendFeedbackWorker_DoWork( object sender, DoWorkEventArgs e )
+        {
+            BugReport report = new BugReport
+            {
+                FogBugzUrl = "https://philltest.fogbugz.com/ScoutSubmit.asp",
+                UserName = "Exception Reporter",
+                Title = "User feedback",
+                Project = "BugzScoutSharp",
+                Area = "Feedback",
+                DefaultMessage = ErrorHandler.DEFAULT_BUGZSCOUT_MESSAGE,
+            };
+            report.AddMachineDetails( "Feedback sent by" );
+            report.Description += Environment.NewLine + tbFeedback.Text;
+            report.Submit( );
+        }
+
+        private void sendFeedbackWorker_RunWorkerCompleted( object sender, RunWorkerCompletedEventArgs e )
+        {
+            MessageBox.Show( "Thanks - your feedback was received successfully!", "Send Feedback", MessageBoxButtons.OK, MessageBoxIcon.Information );
+            Close( );
+        }
+    }
+}

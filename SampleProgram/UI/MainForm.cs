@@ -45,5 +45,10 @@ namespace SampleProgram.UI
         {
             throw new AccessViolationException( "Oh no!" );
         }
+
+        private void button1_Click( object sender, EventArgs e )
+        {
+            new FeedbackForm( ).ShowDialog( this );
+        }
     }
 }

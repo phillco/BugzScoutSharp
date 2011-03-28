@@ -32,11 +32,13 @@
             this.label1 = new System.Windows.Forms.Label( );
             this.label2 = new System.Windows.Forms.Label( );
             this.panel1 = new System.Windows.Forms.Panel( );
-            this.fogbugzLogo = new System.Windows.Forms.PictureBox( );
             this.label3 = new System.Windows.Forms.Label( );
             this.label4 = new System.Windows.Forms.Label( );
             this.btnThrowException = new System.Windows.Forms.Button( );
             this.btnThrowFatal = new System.Windows.Forms.Button( );
+            this.label5 = new System.Windows.Forms.Label( );
+            this.button1 = new System.Windows.Forms.Button( );
+            this.fogbugzLogo = new System.Windows.Forms.PictureBox( );
             this.panel1.SuspendLayout( );
             ( (System.ComponentModel.ISupportInitialize) ( this.fogbugzLogo ) ).BeginInit( );
             this.SuspendLayout( );
@@ -73,17 +75,6 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size( 444, 76 );
             this.panel1.TabIndex = 2;
-            // 
-            // fogbugzLogo
-            // 
-            this.fogbugzLogo.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.fogbugzLogo.Image = global::SampleProgram.Properties.Resources.Fogbugz_kiwi;
-            this.fogbugzLogo.Location = new System.Drawing.Point( 12, 12 );
-            this.fogbugzLogo.Name = "fogbugzLogo";
-            this.fogbugzLogo.Size = new System.Drawing.Size( 154, 50 );
-            this.fogbugzLogo.TabIndex = 0;
-            this.fogbugzLogo.TabStop = false;
-            this.fogbugzLogo.Click += new System.EventHandler( this.fogbugzLogo_Click );
             // 
             // label3
             // 
@@ -122,11 +113,43 @@
             this.btnThrowFatal.UseVisualStyleBackColor = true;
             this.btnThrowFatal.Click += new System.EventHandler( this.btnThrowFatal_Click );
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point( 12, 158 );
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size( 271, 13 );
+            this.label5.TabIndex = 7;
+            this.label5.Text = "BugzScout isn\'t just limited to error reports! See below:";
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point( 12, 181 );
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size( 100, 25 );
+            this.button1.TabIndex = 8;
+            this.button1.Text = "Send Feedback";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler( this.button1_Click );
+            // 
+            // fogbugzLogo
+            // 
+            this.fogbugzLogo.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.fogbugzLogo.Image = global::SampleProgram.Properties.Resources.Fogbugz_kiwi;
+            this.fogbugzLogo.Location = new System.Drawing.Point( 12, 12 );
+            this.fogbugzLogo.Name = "fogbugzLogo";
+            this.fogbugzLogo.Size = new System.Drawing.Size( 154, 50 );
+            this.fogbugzLogo.TabIndex = 0;
+            this.fogbugzLogo.TabStop = false;
+            this.fogbugzLogo.Click += new System.EventHandler( this.fogbugzLogo_Click );
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF( 6F, 13F );
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size( 444, 157 );
+            this.ClientSize = new System.Drawing.Size( 444, 232 );
+            this.Controls.Add( this.button1 );
+            this.Controls.Add( this.label5 );
             this.Controls.Add( this.btnThrowFatal );
             this.Controls.Add( this.btnThrowException );
             this.Controls.Add( this.label4 );
@@ -156,6 +179,8 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btnThrowException;
         private System.Windows.Forms.Button btnThrowFatal;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button button1;
     }
 }
 
