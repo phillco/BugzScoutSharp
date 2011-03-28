@@ -1,13 +1,3 @@
-// Copyright 2000-2004 Fog Creek Software, Inc.
-
-#region credits
-//************************************************************************************
-// The original BugReport.cs file was created by Lasse V. Karlsen, 14. Apr 2004. 
-// Email: lasse@vkarlsen.no
-// For FogBugz support, send emails to customer-service@fogcreek.com
-//************************************************************************************
-#endregion
-
 using System;
 using System.IO;
 using System.Text;
@@ -15,455 +5,135 @@ using System.Text.RegularExpressions;
 using System.Net;
 using System.Web;
 
-namespace FogBugz {
+namespace FogCreek
+{
+    /// <summary>
+    /// Lets you create bug reports and submit them to FogBugz. Originally by Lasse V. Karlsen (2004), lasse@vkarlsen.no; revamped by Phillip Cohen (2011), pc@phillipcohen.net.
+    /// 
+    /// Copyright (c) 2000-2011 Fog Creek Software, Inc. 
+    /// For FogBugz support, e-mail customer-service@fogcreek.com.
+    /// </summary>
+    public class BugReport
+    {
+        public string UserName { get; set; }
+        public string Project { get; set; }
+        public string Area { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string CustomerEmail { get; set; }
+        public bool ForceNewReport { get; set; }
+        public string FogBugzUrl { get; set; }
+        public string DefaultMessage { get; set; }
 
-    public class BugReport{
-
-        #region Private Member Variables
-
-        private string userName;
-        private string project = null;
-        private string area = null;
-        private string description = null;
-        private string extraInformation = null;
-        private string customerEmail = null;
-        private bool forceNewBug = false;
-        private string fogBugzUrl;
-        private string defaultMsg;
-
-        #endregion
-
-
-        /* BugReport
-			Example:
-            BugReport rep = new BugReport("http://localhost/fogbugz/scoutSubmit.asp", "Test User");
-            rep.Description = "Problem running program";
-            rep.Email = "someuser@domain.com";
-            rep.Submit();
-        */
-        public BugReport(string url, string username){
-            if (url == null || url.Length == 0) throw new ArgumentNullException("url");
-            if (username == null || username.Length == 0) throw new ArgumentNullException("username");
-            fogBugzUrl = url;
-            userName = username;
+        /// <summary>
+        /// Appends some details about the user's computer to the bug report. Eg, "Opened by User, from MACHINE (56.23.124.16)"
+        /// </summary>
+        /// <param name="header">The starting header; customize it as you like ("Opened by", "Followup added by", "Feedback submitted by", etc.)</param>
+        public void AddMachineDetails( string header )
+        {
+            Description += String.Format( "{0} {1}, from {2} ({3}):" + Environment.NewLine, header, Environment.UserName, Environment.MachineName, Dns.Resolve( Environment.MachineName ).AddressList[0].ToString( ) );
         }
 
-
-        #region Public Instance Methods
-
-        // Submit: Submits a new bug report to the FogBugz submission page, which in turn puts it into the database
-        public string Submit(){
-            if (this.description == null || this.description.Length == 0)throw new ArgumentNullException("Description");
-            if (this.project == null || this.project.Length == 0)throw new ArgumentNullException("Project");
-            if (this.area == null || this.area.Length == 0)throw new ArgumentNullException("Area");
-
-            // Prepare request
-            WebRequest req = WebRequest.Create(fogBugzUrl);
-            req.ContentType = "application/x-www-form-urlencoded";
-            req.Method = "POST";
-
-            string parameters = "";
-            parameters += "Description=" + HttpUtility.UrlEncode(this.description);
-            if (this.extraInformation != null && this.extraInformation.Length > 0) parameters += "&Extra=" + HttpUtility.UrlEncode(this.extraInformation);
-            if (this.customerEmail != null && this.customerEmail.Length > 0) parameters += "&Email=" + HttpUtility.UrlEncode(this.customerEmail);
-            parameters += "&ScoutUserName=" + HttpUtility.UrlEncode(this.userName);
-            parameters += "&ScoutProject=" + HttpUtility.UrlEncode(this.project);
-            parameters += "&ScoutArea=" + HttpUtility.UrlEncode(this.area);
-            parameters += "&ForceNewBug=" + (this.forceNewBug?"1":"0");
-
-            byte[] bytes = System.Text.Encoding.ASCII.GetBytes(parameters);
-            req.ContentLength = bytes.Length;
-            Stream os = req.GetRequestStream();
-            os.Write(bytes, 0, bytes.Length);
-            os.Close();
-
-            WebResponse resp = req.GetResponse();
-            if (resp == null) return null;
-            StreamReader sr = new StreamReader(resp.GetResponseStream());
-
-            string responseText = sr.ReadToEnd().Trim();
-            responseText = ParseResult(responseText);
-            return ( responseText == "") ? this.defaultMsg : responseText;
+        /// <summary>
+        /// Appends the details about an exception to the bug report. (Also formats it nicely.) You can call this multiple times with different exceptions if you like.
+        /// </summary>
+        /// <param name="e"></param>
+        public void AddExceptionDetails( Exception e )
+        {
+            Description += String.Format( "[code]{0}[/code]", e.ToString( ) );
+            Title = String.Format( "{0} {1}", Util.GetExceptionLineNumber( e ), e.Message );
         }
 
-
-        /* SetException
-			This method will copy information from the specified exception object into the BugReport
-			object, specifying how version numbers will be formatted.
-
-			ex: The Exception object to copy information from. This parameter cannot be null or an 
-			ArgumentNullException exception will be thrown.
-
-			versionFormat: A string used to format the version number. This string will be passed to String.Format,
-			and the four parameters given will be major, minor, build, and revision version numbers. This parameter
-			cannot be null or an ArgumentNullException exception will be thrown.
-
-			addUserAndMachineInformation: Set to true if you want the method to add information like machine name, 
-			username, ip address and so on; otherwise, set to false.
-		*/
-        public void SetException(Exception ex, bool addUserAndMachineInformation, string versionFormat){
-            if (ex == null) throw new ArgumentNullException("ex");
-            if (versionFormat == null || versionFormat.Length == 0) throw new ArgumentNullException("versionFormat");
-
-            this.description = GetExceptionDescription(ex, versionFormat);
-
-            StringBuilder extra = new StringBuilder();
-            if (addUserAndMachineInformation){
-                extra.AppendFormat(new System.Resources.ResourceManager(typeof(BugReport)).GetString("Username") + Environment.NewLine, Environment.UserName);
-                extra.AppendFormat(new System.Resources.ResourceManager(typeof(BugReport)).GetString("MachineName") + Environment.NewLine, Environment.MachineName);
-                extra.AppendFormat(new System.Resources.ResourceManager(typeof(BugReport)).GetString("IPAddress") + Environment.NewLine, System.Net.Dns.Resolve(Environment.MachineName).AddressList[0].ToString());
-                extra.Append(Environment.NewLine);
-            }
-
-            string prefix = "";
-
-            extra.Append(new System.Resources.ResourceManager(typeof(BugReport)).GetString("Stacktrace") + Environment.NewLine);
-            foreach (string line in ex.StackTrace.Split('\n', '\r')){
-                if (line != null && line.Length > 0)
-                    extra.AppendFormat("{0}" + Environment.NewLine, line.Trim());
-            }
-            extra.Append(Environment.NewLine);
-
-            Regex reUnwantedProperties = new Regex(@"^(StackTrace|Source|TargetSite)$", RegexOptions.IgnoreCase);
-            while (ex != null){
-                bool any = false;
-                foreach (System.Reflection.PropertyInfo pi in ex.GetType().GetProperties()){
-                    if (!reUnwantedProperties.Match(pi.Name).Success){
-                        Object value = pi.GetValue(ex, new Object[] { });
-                        if (value != null){
-                            if (IsInteger(value))
-                                extra.AppendFormat("{0}={1} (0x{1:X})" + Environment.NewLine, pi.Name, value);
-                            else
-                                extra.AppendFormat("{0}={1}" + Environment.NewLine, pi.Name, value);
-                            any = true;
-                        }
-                    }
-                }
-                if (ex.InnerException != null){
-                    if (any) extra.Append(Environment.NewLine);
-                    prefix = new System.Resources.ResourceManager(typeof(BugReport)).GetString("InnerException") + " ";
-                }
-                ex = ex.InnerException;
-            }
-
-            if (this.extraInformation == null || this.extraInformation.Length == 0)
-                this.extraInformation = extra.ToString();
-            else
-                this.extraInformation += Environment.NewLine + extra.ToString();
+        /// <summary>
+        /// Appends a list of all loaded assemblies to the bug report.
+        /// </summary>
+        public void AddAssemblyList( )
+        {
+            Description += Util.GetAssemblyList( );
         }
 
+        /// <summary>
+        /// Converts this bug report to a list of HTTP POST parameters suitable for sending to server.
+        /// </summary>
+        /// <returns></returns>
+        public char[] ToPostArray( )
+        {
+            string parameters = "Description=" + HttpUtility.UrlEncode( this.Title );
+            if ( this.Description != null && this.Description.Length > 0 )
+                parameters += "&Extra=" + HttpUtility.UrlEncode( this.Description );
+            if ( this.CustomerEmail != null && this.CustomerEmail.Length > 0 )
+                parameters += "&Email=" + HttpUtility.UrlEncode( this.CustomerEmail );
+            parameters += "&ScoutUserName=" + HttpUtility.UrlEncode( this.UserName );
+            parameters += "&ScoutProject=" + HttpUtility.UrlEncode( this.Project );
+            parameters += "&ScoutArea=" + HttpUtility.UrlEncode( this.Area );
+            parameters += "&ForceNewBug=" + ( this.ForceNewReport ? "1" : "0" );
 
-        // AppendAssemblyList: Appends a list of assembly names and version numbers to the extra information to send in the report.
-        public void AppendAssemblyList(){
-            StringBuilder assemblies = new StringBuilder();
-            if (this.extraInformation == null) this.extraInformation = "";
-            else if (this.extraInformation.Length > 0) assemblies.Append(Environment.NewLine);
-
-            assemblies.Append(new System.Resources.ResourceManager(typeof(BugReport)).GetString("Assemblies") + Environment.NewLine);
-            foreach (System.Reflection.Assembly asm in AppDomain.CurrentDomain.GetAssemblies()){
-                assemblies.AppendFormat("   {0}, {1}" + Environment.NewLine, asm.GetName().Name, asm.GetName().Version.ToString());
-            }
-            this.extraInformation += assemblies.ToString();
+            return parameters.ToCharArray( );
         }
 
-        #endregion
+        /// <summary>
+        /// Submits this report to FogBugz.
+        /// </summary>
+        /// <returns></returns>
+        public string Submit( )
+        {  
+            if ( this.Title == null || this.Title.Length == 0 ) throw new ArgumentNullException( "Description" );
+            if ( this.Project == null || this.Project.Length == 0 ) throw new ArgumentNullException( "Project" );
+            if ( this.Area == null || this.Area.Length == 0 ) throw new ArgumentNullException( "Area" );
 
-
-        #region Public Static Methods
-
-        /* Submit
-        This method calls the instance Submit method, which submits a new bug to FogBugz.
-        
-        url: The absolute url for the FogBugz submission page. Mandatory. 
-        
-        username: The FogBugz user to open this bug as. Mandatory. 
-        
-        project: The FogBugz project to open this bug in. Mandatory. 
-        
-        area: The FogBugz area to open this bug in. Mandatory.
-
-		email: The email of the customer reporting the bug. Optional. 
-
-        forceNewBug: If set to true, this forces FogBugz to create a new case for this bug, 
-        even if a bug with the same description already exists.
-        
-        defaultMsg: The message to return if no message is found for an existing duplicate case. Optional.
-        
-        description: The description of the bug. If the description field matches exactly to 
-        an existing bug in FogBugz, this bug submission will be APPENDED to the history of the 
-        existing bug, and a new bug will NOT be created (unless you check Force New Bug below). 
-        The occurrences field for this bug will then increase by 1. Mandatory.
-
-        extraInformation: Extra descriptive information. Optional. 
-        
-        */
-        public static string Submit(string url, string username, string project, string area, string email, bool forceNewBug, string defaultMsg, string description, string extraInformation){
-            if (url == null || url.Length == 0) throw new ArgumentNullException("url");
-            if (username == null || username.Length == 0) throw new ArgumentNullException("username");
-            if (project == null || project.Length == 0) throw new ArgumentNullException("project");
-            if (area == null || area.Length == 0) throw new ArgumentNullException("area");
-            if (description == null || description.Length == 0) throw new ArgumentNullException("description");
-
-            BugReport report = new BugReport(url, username);
-            report.Project = project;
-            report.Area = area;
-            report.Description = description;
-            report.Email = (email == null) ? "" : email;
-            report.ForceNewBug = forceNewBug;
-            report.ExtraInformation = (extraInformation == null) ? "" : extraInformation;
-			report.DefaultMsg = (defaultMsg == null) ? "" : defaultMsg;
-            return report.Submit();
+            return Submit( FogBugzUrl, ToPostArray( ) );
         }
 
-        /* Submit 
-        addUserAndMachineInformation: Set to true if user and machine information (username, machine name, machine ip address) is to be
-        added to the bug report; set to false otherwise.
+        /// <summary>
+        /// Submits the given array of POST parameters to the given FogBugz address.
+        /// This lets you submit a bug report that saved earlier, e.g., to a file.
+        /// </summary>
+        /// <returns></returns>
+        public static string Submit( string url, char[] paramData )
+        {         
+            // Create the request.
+            WebRequest request = WebRequest.Create( url );
+            request.Timeout = 15000;
+            request.ContentType = "application/x-www-form-urlencoded";
+            request.Method = "POST";
 
-        appendAssemblyList: Set to true to append a list of loaded assemblies and their versions; otherwise set to false.
+            // Append the parameters...
+            byte[] parameters = Encoding.ASCII.GetBytes( paramData );
+            request.ContentLength = parameters.Length;
+            using ( Stream outStream = request.GetRequestStream( ) )
+                outStream.Write( parameters, 0, parameters.Length );
 
-        forceNewBug: Set to true to force the system to open a new bug entry for this submission; or set to false
-        if the system should try to append this submission as an additional occurence to an existing bug entry.
+            // ...and submit it!
+            WebResponse response = request.GetResponse( );
+            if ( response == null )
+                return null;
 
-        versionFormat: A string used to format the version number. This string will be passed to String.Format,
-        and the four parameters given will be major, minor, build, and revision version numbers. This parameter
-        cannot be null or an ArgumentNullException exception will be thrown.
-        
-        returns: Returns the string returned by the scout submission page, perhaps including information to the user about
-        how to work around the bug.
-        */
-        public static string Submit(string url, string username, string project, string area, string email, bool forceNewBug, string defaultMsg, Exception ex, bool addUserAndMachineInformation, string versionFormat, bool appendAssemblyList){
-            if (url == null || url.Length == 0) throw new ArgumentNullException("url");
-            if (username == null || username.Length == 0) throw new ArgumentNullException("username");
-            if (project == null || project.Length == 0) throw new ArgumentNullException("project");
-            if (area == null || area.Length == 0) throw new ArgumentNullException("area");
-            if (ex == null) throw new ArgumentNullException("ex");
-            if (versionFormat == null || versionFormat.Length == 0) throw new ArgumentNullException("versionFormat");
-
-            BugReport report = new BugReport(url, username);
-            report.Project = project;
-            report.Area = area;
-            report.SetException(ex, addUserAndMachineInformation, versionFormat);
-            if (appendAssemblyList) report.AppendAssemblyList();
-            report.Email = (email == null)?String.Empty:email;
-            report.ForceNewBug = forceNewBug;
-			report.DefaultMsg = (defaultMsg == null) ? "" : defaultMsg;
-            return report.Submit();
+            return ParseResult( new StreamReader( response.GetResponseStream( ) ).ReadToEnd( ).Trim( ) );
         }
 
-        #endregion
-
-        
-        #region Private Methods
-
-        // ParseResult: Deciphers the xml result returned by the scout page and throws an exception in the case of a failure notice.
-        private string ParseResult(string result){
+        /// <summary>
+        /// Deciphers the FogBugz server's XML result.
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        private static string ParseResult( string result )
+        {
             // Check for a success result first and just return in that case
-            Match ma = Regex.Match(result, "<Success>(?<message>.*)</Success>", RegexOptions.IgnoreCase);
-            if (ma.Success) return ma.Groups["message"].Value;
+            Match ma = Regex.Match( result, "<Success>(?<message>.*)</Success>", RegexOptions.IgnoreCase );
+            if ( ma.Success ) return ma.Groups["message"].Value;
 
             // Check for a failure result second, and throw an exception in that case
-            ma = Regex.Match(result, "<Error>(?<message>.*)</Error>", RegexOptions.IgnoreCase);
-            if (ma.Success) throw new BugReportSubmitException(ma.Groups["message"].Value);
+            ma = Regex.Match( result, "<Error>(?<message>.*)</Error>", RegexOptions.IgnoreCase );
+            if ( ma.Success ) throw new BugReportSubmitException( ma.Groups["message"].Value );
 
             // Unknown format, so throw an InvalidOperationException to note the fact
-            throw new InvalidOperationException(new System.Resources.ResourceManager(typeof(BugReport)).GetString("UnableToProcessResult"));
+            throw new InvalidOperationException( "UnableToProcessReportResult" );
         }
+    }
 
-
-        /* GetExceptionDescription
-        Formats the description of the exception into a unique identifiable string.
-        ex: The Exception object to copy information from. This parameter cannot be null or an
-        ArgumentNullException exception will be thrown.
-
-        versionFormat: A string used to format the version number. This string will be passed to String.Format,
-        and the four parameters given will be major, minor, build, and revision version numbers. This parameter
-        cannot be null or an ArgumentNullException exception will be thrown.
-        
-        returns: The formatted description string.
-
-        Remarks: The reason for this method and not just a simpler way of producing the description is that this
-        string will be used to find existing bugs in the database to add occurances to, instead of adding
-        new bugs for each occurance.
-		*/
-        private string GetExceptionDescription(Exception ex, string versionFormat){
-            if (ex == null) throw new ArgumentNullException("ex");
-            if (versionFormat == null || versionFormat.Length == 0) throw new ArgumentNullException("versionFormat");
-            
-            StringBuilder desc = new StringBuilder();
-
-            // We first want the class name of the exception that occured
-            desc.Append(ex.GetType().Name);
-
-            // If the exception has a property called ErrorCode, add the value of it to the desc
-            Regex rePropertyName = new Regex("^(ErrorCode|HResult)$", RegexOptions.IgnoreCase);
-            foreach (System.Reflection.PropertyInfo property in ex.GetType().GetProperties()){
-                if (rePropertyName.Match(property.Name).Success){
-                    // Only deal with readable properties
-                    if (property.CanRead){
-                        // Only deal with properties that aren't indexed
-                        if (property.GetIndexParameters().Length == 0){
-                            // Only add property values that are not null
-                            Object propertyValue = property.GetValue(ex, new Object[] { });
-                            if (propertyValue != null){
-                                // If the property value converted to a string yields the same name as the class
-                                // name of the value, it is uninteresting
-                                string propertyValueString = propertyValue.ToString();
-                                if (propertyValueString != propertyValue.GetType().FullName)
-                                    desc.AppendFormat(" {0}={1}", property.Name, propertyValueString);
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Work out the first source code reference in the stacktrace and add the unique value for it
-            Regex reSourceReference = new Regex("at\\s+.+\\.(?<methodname>[^)]+)\\(.*\\)\\s+in\\s+.+\\\\(?<filename>[^:\\\\]+):line\\s+(?<linenumber>[0-9]+)", RegexOptions.IgnoreCase);
-            bool gotReference = false;
-            if (ex.StackTrace != null)
-            {
-                foreach (string line in ex.StackTrace.Split('\n', '\r'))
-                {
-                    Match ma = reSourceReference.Match(line);
-                    if (ma.Success)
-                    {
-                        desc.AppendFormat(" ({0}:{1}:{2})",
-                            ma.Groups["filename"].Value,
-                            ma.Groups["methodname"].Value,
-                            ma.Groups["linenumber"].Value);
-                        gotReference = true;
-                        break;
-                    }
-                }
-            }
-
-
-            // If we didn't get a source reference (release compile ?), try to find a non-System.* reference
-            if (!gotReference){
-                Regex reMethodReference = new Regex("at\\s+(?<methodname>[^(]+)\\(.*\\)", RegexOptions.IgnoreCase);
-                if (ex.StackTrace != null){
-                    foreach (string line in ex.StackTrace.Split('\n', '\r')){
-                        Match ma = reMethodReference.Match(line);
-                        if (ma.Success){
-                            if (!ma.Groups["methodname"].Value.ToUpper().StartsWith("SYSTEM.")){
-                                desc.AppendFormat(" ({0})",
-                                    ma.Groups["methodname"].Value);
-                                gotReference = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // If we can get the entry assembly, add the version number of it
-            System.Reflection.Assembly entryAssembly = System.Reflection.Assembly.GetEntryAssembly();
-            if (entryAssembly != null){
-                System.Reflection.AssemblyName entryAssemblyName = entryAssembly.GetName();
-                if (entryAssemblyName != null){
-                    if (entryAssemblyName.Version != null){
-                        string version = String.Format(versionFormat,
-                            entryAssemblyName.Version.Major,
-                            entryAssemblyName.Version.Minor,
-                            entryAssemblyName.Version.Build,
-                            entryAssemblyName.Version.Revision);
-                        desc.AppendFormat(" V{0}", version);
-                    }
-                }
-            }
-
-            // Return result
-            return desc.ToString();
-        }
-
-
-		//little helper
-		private bool IsInteger(Object x){
-			try{			
-				Convert.ToInt32(x);
-				return true;
-			} 
-			catch {
-				return false;
-			}	
-		}
-
-        #endregion
-
-
-        #region Public Properties
-
-        // Gets the url to the submit page that the bug will be reported to.
-        public string FogBugzUrl{
-            get{return this.fogBugzUrl;}
-        }
-
-        // Gets the username used when logging in to the FogBugz database.
-        public string FogBugzUsername{
-            get{return this.userName;}
-        }
-
-        // The description to post for the bug.
-        public string Description{
-            get{return this.description;}
-            set{
-                if (value == null || value.Length == 0) throw new ArgumentNullException("Description");
-                this.description = value;
-            }
-        }
-
-        // Any extra information to provide for the bug report.
-        public string ExtraInformation{
-            get{return this.extraInformation;}
-            set{
-                if (value == null) throw new ArgumentNullException("ExtraInformation");
-                this.extraInformation = value;
-            }
-        }
-
-        // The name of the project to report the bug for.
-        public string Project{
-            get{return this.project;}
-            set{
-                if (value == null || value.Length == 0) throw new ArgumentNullException("Project");
-                this.project = value;
-            }
-        }
-
-        // The area to report the bug in.
-        public string Area{
-            get{return this.area;}
-            set{
-                if (value == null || value.Length == 0) throw new ArgumentNullException("Area");
-                this.area = value;
-            }
-        }
-
-        // The email to attach to the bug report.
-        public string Email{
-            get{return this.customerEmail;}
-            set{
-                if (value == null || value.Length == 0) throw new ArgumentNullException("Email");
-                this.customerEmail = value;
-            }
-        }
-
-        // Whether to force a new bug or try to locate an existing one to append to.
-        public bool ForceNewBug{
-            get{return this.forceNewBug;}
-            set{
-				this.forceNewBug = value;
-			}
-        }
-
-        public string DefaultMsg{
-            get{return this.defaultMsg;}
-            set{
-				this.defaultMsg = value;
-			}
-        }
-
-		#endregion
-
-
+    [Serializable]
+    public class BugReportSubmitException : SystemException
+    {
+        public BugReportSubmitException( String message ) : base( message ) { }
     }
 }
