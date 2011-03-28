@@ -90,25 +90,29 @@ namespace FogCreek
         /// </summary>
         /// <returns></returns>
         public static string Submit( string url, char[] paramData )
-        {         
-            // Create the request.
-            WebRequest request = WebRequest.Create( url );
-            request.Timeout = 15000;
-            request.ContentType = "application/x-www-form-urlencoded";
-            request.Method = "POST";
+        {
+            try
+            {
+                // Create the request.
+                WebRequest request = WebRequest.Create( url );
+                request.Timeout = 15000;
+                request.ContentType = "application/x-www-form-urlencoded";
+                request.Method = "POST";
 
-            // Append the parameters...
-            byte[] parameters = Encoding.ASCII.GetBytes( paramData );
-            request.ContentLength = parameters.Length;
-            using ( Stream outStream = request.GetRequestStream( ) )
-                outStream.Write( parameters, 0, parameters.Length );
+                // Append the parameters...
+                byte[] parameters = Encoding.ASCII.GetBytes( paramData );
+                request.ContentLength = parameters.Length;
+                using ( Stream outStream = request.GetRequestStream( ) )
+                    outStream.Write( parameters, 0, parameters.Length );
 
-            // ...and submit it!
-            WebResponse response = request.GetResponse( );
-            if ( response == null )
-                return null;
+                // ...and submit it!
+                WebResponse response = request.GetResponse( );
+                if ( response == null )
+                    return null;
 
-            return ParseResult( new StreamReader( response.GetResponseStream( ) ).ReadToEnd( ).Trim( ) );
+                return ParseResult( new StreamReader( response.GetResponseStream( ) ).ReadToEnd( ).Trim( ) );
+            }
+            catch ( WebException ) { return null; }
         }
 
         /// <summary>
