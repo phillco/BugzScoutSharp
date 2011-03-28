@@ -6,7 +6,8 @@
     <ProjectGuid>{C52B0986-5CE9-485B-88BC-DA48BB06D7FB}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ApplicationIcon>App.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
     <AssemblyName>BugzScoutDotNet</AssemblyName>
@@ -109,7 +110,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App.ico" />
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
