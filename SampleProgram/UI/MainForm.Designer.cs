@@ -36,6 +36,7 @@
             this.label3 = new System.Windows.Forms.Label( );
             this.label4 = new System.Windows.Forms.Label( );
             this.btnThrowException = new System.Windows.Forms.Button( );
+            this.btnThrowFatal = new System.Windows.Forms.Button( );
             this.panel1.SuspendLayout( );
             ( (System.ComponentModel.ISupportInitialize) ( this.fogbugzLogo ) ).BeginInit( );
             this.SuspendLayout( );
@@ -111,11 +112,22 @@
             this.btnThrowException.UseVisualStyleBackColor = true;
             this.btnThrowException.Click += new System.EventHandler( this.btnThrowException_Click );
             // 
+            // btnThrowFatal
+            // 
+            this.btnThrowFatal.Location = new System.Drawing.Point( 132, 112 );
+            this.btnThrowFatal.Name = "btnThrowFatal";
+            this.btnThrowFatal.Size = new System.Drawing.Size( 111, 25 );
+            this.btnThrowFatal.TabIndex = 6;
+            this.btnThrowFatal.Text = "Throw Fatal";
+            this.btnThrowFatal.UseVisualStyleBackColor = true;
+            this.btnThrowFatal.Click += new System.EventHandler( this.btnThrowFatal_Click );
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF( 6F, 13F );
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size( 444, 157 );
+            this.Controls.Add( this.btnThrowFatal );
             this.Controls.Add( this.btnThrowException );
             this.Controls.Add( this.label4 );
             this.Controls.Add( this.label3 );
@@ -143,6 +155,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btnThrowException;
+        private System.Windows.Forms.Button btnThrowFatal;
     }
 }
 

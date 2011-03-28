@@ -45,9 +45,6 @@ namespace SampleProgram.UI
         private void UpdateState( )
         {
             lblBottomDivide.Width = Width;
-
-            if ( ErrorIsFatal )
-                MainForm.Instance.Hide( );
         }
 
         private void btnRestart_Click( object sender, EventArgs e )
@@ -88,6 +85,14 @@ namespace SampleProgram.UI
                 lblDeveloperResponse.Text = "Developer response: " + response;
                 lblDeveloperResponse.Show( );
             }
+        }
+
+        private void hideMainFormTimer_Tick( object sender, EventArgs e )
+        {
+            if ( ErrorIsFatal && MainForm.Instance != null && !MainForm.Instance.IsDisposed )
+                MainForm.Instance.Hide( );
+            else
+                hideMainFormTimer.Stop( );
         }
     }
 }

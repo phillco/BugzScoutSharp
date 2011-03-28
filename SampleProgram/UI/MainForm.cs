@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
+using System.Threading;
 
 namespace SampleProgram.UI
 {
@@ -32,6 +33,17 @@ namespace SampleProgram.UI
                 proc.StartInfo.FileName = "http://fogbugz.com";
                 proc.Start( );
             }
+        }
+
+        private void btnThrowFatal_Click( object sender, EventArgs e )
+        {
+            // "Fatal" exceptions are those that are thrown in threads other than the UI.
+            new Thread(() => ThrowEvilException()).Start();
+        }
+
+        private void ThrowEvilException( )
+        {
+            throw new AccessViolationException( "Oh no!" );
         }
     }
 }

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent( )
         {
+            this.components = new System.ComponentModel.Container( );
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager( typeof( ErrorForm ) );
             this.panel2 = new System.Windows.Forms.Panel( );
             this.lblBottomDivide = new System.Windows.Forms.Label( );
@@ -43,6 +44,7 @@
             this.pbIcon = new System.Windows.Forms.PictureBox( );
             this.label2 = new System.Windows.Forms.Label( );
             this.panelReportSent = new System.Windows.Forms.Panel( );
+            this.hideMainFormTimer = new System.Windows.Forms.Timer( this.components );
             this.panel2.SuspendLayout( );
             ( (System.ComponentModel.ISupportInitialize) ( this.pictureBox1 ) ).BeginInit( );
             ( (System.ComponentModel.ISupportInitialize) ( this.pbIcon ) ).BeginInit( );
@@ -189,6 +191,11 @@
             this.panelReportSent.TabIndex = 19;
             this.panelReportSent.Visible = false;
             // 
+            // hideMainFormTimer
+            // 
+            this.hideMainFormTimer.Enabled = true;
+            this.hideMainFormTimer.Tick += new System.EventHandler( this.hideMainFormTimer_Tick );
+            // 
             // ErrorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF( 6F, 13F );
@@ -238,5 +245,6 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Panel panelReportSent;
+        private System.Windows.Forms.Timer hideMainFormTimer;
     }
 }
