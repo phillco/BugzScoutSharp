@@ -40,8 +40,8 @@ namespace FogCreek
         /// <param name="e"></param>
         public void AddExceptionDetails( Exception e )
         {
-            Description += String.Format( "[code]{0}[/code]\n", e.ToString( ) );
-            Title = String.Format( "{0}: {1}", Util.GetExceptionLineNumber( e ), e.Message );
+            Description += String.Format( "[code]{0}[/code]\nLocation: {1}\n", e.ToString( ), Util.GetExceptionSignature( e, true ) );
+            Title = String.Format( "{0}: {1}", Util.GetExceptionSignature( e, false ), e.Message );
         }
 
         /// <summary>

@@ -30,11 +30,11 @@ namespace SampleProgram
             };
 
             if ( fatal )
-                report.Description += "\nFATAL ERROR\n\n";
+                report.Description += "\n*** FATAL ERROR ***\n";
 
-            report.AddMachineDetails( "Discovered by" );
+            report.AddMachineDetails( "\nDiscovered by" );
             report.AddExceptionDetails( e );
-            report.Description += "Version: " + Util.GetProgramVersion( ) + " (built on " + Util.GetProgramBuildDate( ).ToShortDateString( ) + ")" + Environment.NewLine;
+            report.Description += "Application version: " + Util.GetProgramVersion( ) + " (built on " + Util.GetProgramBuildDate( ).ToShortDateString( ) + ")" + Environment.NewLine;
             report.Description += "OS: " + Util.GetWindowsVersion( ) + Environment.NewLine;
 
             // Show the error form with the report.

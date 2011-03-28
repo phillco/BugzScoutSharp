@@ -28,7 +28,7 @@ namespace FogCreek
         /// <summary>
         /// Given an exception, returns where in the code that exception occurred (eg "(BugReport.cs:67) Submit()").
         /// </summary>
-        public static string GetExceptionLineNumber( Exception e )
+        public static string GetExceptionSignature( Exception e, bool includeLineNumber )
         {
             Regex reSourceReference = new Regex( "at\\s+.+\\.(?<methodname>[^)]+)\\(.*\\)\\s+in\\s+.+\\\\(?<filename>[^:\\\\]+):line\\s+(?<linenumber>[0-9]+)", RegexOptions.IgnoreCase );
             if ( e.StackTrace != null )
@@ -37,7 +37,12 @@ namespace FogCreek
                 {
                     Match ma = reSourceReference.Match( line );
                     if ( ma.Success )
-                        return String.Format( "({0}:{1}) {2}()", ma.Groups["filename"].Value, ma.Groups["linenumber"].Value, ma.Groups["methodname"].Value);
+                    {
+                        if ( includeLineNumber )
+                            return String.Format( "({0}:{1}) {2}()", ma.Groups["filename"].Value, ma.Groups["linenumber"].Value, ma.Groups["methodname"].Value );
+                        else
+                            return String.Format( "({0}) {1}()", ma.Groups["filename"].Value, ma.Groups["methodname"].Value );
+                    }
                 }
             }
 
