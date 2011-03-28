@@ -1,7 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugzScout", "BugzScout\BugzScout.csproj", "{6AE8B3D6-9D65-4879-B9A8-2BF4C694CA77}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugzScout", "BugzScout\BugzScout.csproj", "{C52B0986-5CE9-485B-88BC-DA48BB06D7FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleProgram", "SampleProgram\SampleProgram.csproj", "{BD89CD7C-2864-4013-AC01-F9FD6388FFAB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +11,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6AE8B3D6-9D65-4879-B9A8-2BF4C694CA77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6AE8B3D6-9D65-4879-B9A8-2BF4C694CA77}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6AE8B3D6-9D65-4879-B9A8-2BF4C694CA77}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6AE8B3D6-9D65-4879-B9A8-2BF4C694CA77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C52B0986-5CE9-485B-88BC-DA48BB06D7FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C52B0986-5CE9-485B-88BC-DA48BB06D7FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C52B0986-5CE9-485B-88BC-DA48BB06D7FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C52B0986-5CE9-485B-88BC-DA48BB06D7FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD89CD7C-2864-4013-AC01-F9FD6388FFAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD89CD7C-2864-4013-AC01-F9FD6388FFAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD89CD7C-2864-4013-AC01-F9FD6388FFAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD89CD7C-2864-4013-AC01-F9FD6388FFAB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
