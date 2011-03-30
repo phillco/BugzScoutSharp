@@ -84,7 +84,7 @@ namespace SampleProgram.UI
                 if ( response.Message.Length > 0 )
                 {
                     Height += 30;
-                    lblDeveloperResponse.Text = "Developer response: " + response;
+                    lblDeveloperResponse.Text = "Developer response: " + response.Message;
                     lblDeveloperResponse.Show( );
                 }
             }
