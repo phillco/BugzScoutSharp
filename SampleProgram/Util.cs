@@ -8,6 +8,10 @@ namespace SampleProgram
 {
     public class Util
     {
+        /// <summary>
+        /// Returns the current version of the calling assembly (eg "1.5.6.0").
+        /// </summary>
+        /// <returns></returns>
         public static string GetProgramVersion( )
         {
             Assembly entryAssembly = Assembly.GetEntryAssembly( );
@@ -21,25 +25,54 @@ namespace SampleProgram
             return "Unknown";
         }
 
+        /// <summary>
+        /// Returns the date the version of the calling assembly was built.
+        /// </summary>
         public static DateTime GetProgramBuildDate( )
         {
             return new FileInfo( Assembly.GetExecutingAssembly( ).Location ).LastWriteTime;
         }
 
-        private static int GetOSArchitecture( )
+        /// <summary>
+        /// Returns the version of Windows the local computer is running (ex: "Windows XP SP3 32-bit").
+        /// Adapted from http://andrewensley.com/2009/06/c-detect-windows-os-part-1/
+        /// </summary>
+        public static string GetWindowsVersion( )
+        {
+            // Start with the Windows version.
+            string operatingSystem = "Windows " + GetBaseWindowsVersion( );
+
+            // Add the service pack, if any.
+            if ( Environment.OSVersion.ServicePack.Length > 0 )
+                operatingSystem += " " + Environment.OSVersion.ServicePack;
+
+            // Add the architecture (32-bit/64-bit).
+            operatingSystem += " " + GetOSArchitecture( ).ToString( ) + "-bit";
+
+            return operatingSystem.Trim( );
+        }
+
+        /// <summary>
+        /// Retuurns whether we're on a 32 or 64-bit architecture.
+        /// </summary>
+        /// <returns></returns>
+        public static int GetOSArchitecture( )
         {
             string pa = Environment.GetEnvironmentVariable( "PROCESSOR_ARCHITECTURE" );
             return ( ( String.IsNullOrEmpty( pa ) || String.Compare( pa, 0, "x86", 0, 3, true ) == 0 ) ? 32 : 64 );
         }
 
-        private static string GetBaseWindowsVersion( )
+        /// <summary>
+        /// Returns just the raw version of windows we're running (no service packs or achitecture).
+        /// </summary>
+        /// <returns></returns>
+        protected static string GetBaseWindowsVersion( )
         {
             OperatingSystem os = Environment.OSVersion;
             Version vs = os.Version;
 
-            if ( os.Platform == PlatformID.Win32Windows )
-            {
-                // A pre-NT version of Windows.
+            if ( os.Platform == PlatformID.Win32Windows ) // A pre-NT version of Windows.
+            {                
                 switch ( vs.Minor )
                 {
                     case 0:
@@ -53,7 +86,7 @@ namespace SampleProgram
                         return "Me";
                 }
             }
-            else if ( os.Platform == PlatformID.Win32NT )
+            else if ( os.Platform == PlatformID.Win32NT ) // NT-based windows.
             {
                 switch ( vs.Major )
                 {
@@ -75,25 +108,6 @@ namespace SampleProgram
             }
 
             return "Unknown";
-        }
-
-        /// <summary>
-        /// Returns the version of Windows the local computer is running (ex: "Windows XP SP3 32-bit").
-        /// Adapted from http://andrewensley.com/2009/06/c-detect-windows-os-part-1/
-        /// </summary>
-        public static string GetWindowsVersion( )
-        {
-            // Start with the Windows version.
-            string operatingSystem = "Windows " + GetBaseWindowsVersion( );
-
-            // Add the service pack, if any.
-            if ( Environment.OSVersion.ServicePack.Length > 0 )
-                operatingSystem += " " + Environment.OSVersion.ServicePack;
-
-            // Add the architecture (32-bit/64-bit).
-            operatingSystem += " " + GetOSArchitecture( ).ToString( ) + "-bit";
-
-            return operatingSystem.Trim( );
-        }
+        }       
     }
 }
