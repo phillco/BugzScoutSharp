@@ -53,7 +53,7 @@ namespace SampleProgram
         }
 
         /// <summary>
-        /// Retuurns whether we're on a 32 or 64-bit architecture.
+        /// Returns whether we're on a 32 or 64-bit architecture.
         /// </summary>
         /// <returns></returns>
         public static int GetOSArchitecture( )
@@ -69,16 +69,15 @@ namespace SampleProgram
         protected static string GetBaseWindowsVersion( )
         {
             OperatingSystem os = Environment.OSVersion;
-            Version vs = os.Version;
 
             if ( os.Platform == PlatformID.Win32Windows ) // A pre-NT version of Windows.
             {                
-                switch ( vs.Minor )
+                switch ( os.Version.Minor )
                 {
                     case 0:
                         return "95";
                     case 10:
-                        if ( vs.Revision.ToString( ) == "2222A" )
+                        if ( os.Version.Revision.ToString( ) == "2222A" )
                             return "98SE";
                         else
                             return "98";
@@ -88,19 +87,19 @@ namespace SampleProgram
             }
             else if ( os.Platform == PlatformID.Win32NT ) // NT-based windows.
             {
-                switch ( vs.Major )
+                switch ( os.Version.Major )
                 {
                     case 3:
                         return "NT 3.51";
                     case 4:
                         return "NT 4.0";
                     case 5:
-                        if ( vs.Minor == 0 )
+                        if ( os.Version.Minor == 0 )
                             return "2000";
                         else
                             return "XP";
                     case 6:
-                        if ( vs.Minor == 0 )
+                        if ( os.Version.Minor == 0 )
                             return "Vista";
                         else
                             return "7";
