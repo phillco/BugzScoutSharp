@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Resources;
 
-namespace FogCreek
+namespace FogBugz
 {
     /// <summary>
     /// Some utility functions by the bug reporter.

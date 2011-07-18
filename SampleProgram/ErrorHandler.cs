@@ -5,7 +5,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Threading;
-using FogCreek;
+using FogBugz;
 using SampleProgram.UI;
 
 namespace SampleProgram

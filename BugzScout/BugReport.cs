@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using System.Net;
 using System.Web;
 
-namespace FogCreek
+namespace FogBugz
 {
     /// <summary>
     /// Lets you create bug reports and submit them to FogBugz. Originally by Lasse V. Karlsen (2004), lasse@vkarlsen.no; revamped by Phillip Cohen (2011), pc@phillipcohen.net.
