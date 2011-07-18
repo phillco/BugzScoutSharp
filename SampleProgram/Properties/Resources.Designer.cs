@@ -87,5 +87,12 @@ namespace SampleProgram.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        internal static System.Drawing.Bitmap snake_small {
+            get {
+                object obj = ResourceManager.GetObject("snake-small", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

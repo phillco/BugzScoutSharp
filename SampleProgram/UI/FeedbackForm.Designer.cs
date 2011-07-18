@@ -34,7 +34,8 @@
             this.btnCancel = new System.Windows.Forms.Button( );
             this.btnSend = new System.Windows.Forms.Button( );
             this.sendFeedbackWorker = new System.ComponentModel.BackgroundWorker( );
-            this.pbSending = new System.Windows.Forms.ProgressBar( );
+            this.imgLoadingIndicator = new System.Windows.Forms.PictureBox( );
+            ( (System.ComponentModel.ISupportInitialize) ( this.imgLoadingIndicator ) ).BeginInit( );
             this.SuspendLayout( );
             // 
             // tbFeedback
@@ -72,8 +73,6 @@
             // 
             // btnSend
             // 
-            this.btnSend.Anchor = ( (System.Windows.Forms.AnchorStyles) ( ( System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right ) ) );
-            this.btnSend.Enabled = false;
             this.btnSend.Location = new System.Drawing.Point( 280, 156 );
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size( 75, 25 );
@@ -87,23 +86,23 @@
             this.sendFeedbackWorker.DoWork += new System.ComponentModel.DoWorkEventHandler( this.sendFeedbackWorker_DoWork );
             this.sendFeedbackWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler( this.sendFeedbackWorker_RunWorkerCompleted );
             // 
-            // pbSending
+            // imgLoadingIndicator
             // 
-            this.pbSending.Location = new System.Drawing.Point( 146, 156 );
-            this.pbSending.MarqueeAnimationSpeed = 25;
-            this.pbSending.Name = "pbSending";
-            this.pbSending.Size = new System.Drawing.Size( 128, 25 );
-            this.pbSending.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
-            this.pbSending.TabIndex = 8;
-            this.pbSending.Value = 30;
-            this.pbSending.Visible = false;
+            this.imgLoadingIndicator.Image = global::SampleProgram.Properties.Resources.snake_small;
+            this.imgLoadingIndicator.Location = new System.Drawing.Point( 257, 160 );
+            this.imgLoadingIndicator.Name = "imgLoadingIndicator";
+            this.imgLoadingIndicator.Size = new System.Drawing.Size( 16, 16 );
+            this.imgLoadingIndicator.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.imgLoadingIndicator.TabIndex = 8;
+            this.imgLoadingIndicator.TabStop = false;
+            this.imgLoadingIndicator.Visible = false;
             // 
             // FeedbackForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF( 6F, 13F );
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size( 445, 195 );
-            this.Controls.Add( this.pbSending );
+            this.Controls.Add( this.imgLoadingIndicator );
             this.Controls.Add( this.btnCancel );
             this.Controls.Add( this.btnSend );
             this.Controls.Add( this.label1 );
@@ -114,6 +113,7 @@
             this.MaximizeBox = false;
             this.Name = "FeedbackForm";
             this.Text = "Send feedback";
+            ( (System.ComponentModel.ISupportInitialize) ( this.imgLoadingIndicator ) ).EndInit( );
             this.ResumeLayout( false );
             this.PerformLayout( );
 
@@ -126,6 +126,6 @@
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnSend;
         private System.ComponentModel.BackgroundWorker sendFeedbackWorker;
-        private System.Windows.Forms.ProgressBar pbSending;
+        private System.Windows.Forms.PictureBox imgLoadingIndicator;
     }
 }

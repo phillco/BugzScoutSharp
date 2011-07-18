@@ -116,6 +116,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="brick.ico" />
+    <None Include="Resources\snake-small.gif" />
     <None Include="Resources\accept.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

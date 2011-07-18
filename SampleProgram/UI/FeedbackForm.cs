@@ -32,7 +32,7 @@ namespace SampleProgram.UI
         private void btnSend_Click( object sender, EventArgs e )
         {
             btnSend.Enabled = false;
-            pbSending.Visible = true;
+            imgLoadingIndicator.Visible = true;
             sendFeedbackWorker.RunWorkerAsync( );
         }
 
