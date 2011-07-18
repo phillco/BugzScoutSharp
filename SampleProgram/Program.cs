@@ -15,15 +15,30 @@ namespace SampleProgram
         [STAThread]
         static void Main( )
         {
-            Application.EnableVisualStyles( );
-            Application.SetCompatibleTextRenderingDefault( false );
+            try
+            {
+                Application.EnableVisualStyles( );
+                Application.SetCompatibleTextRenderingDefault( false );
 
-            // Set up error reporting.
-            Application.SetUnhandledExceptionMode( UnhandledExceptionMode.CatchException );
-            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler( CurrentDomain_UnhandledException );
-            Application.ThreadException += new ThreadExceptionEventHandler( Application_ThreadException );
+                // Set up error reporting.
+                Application.SetUnhandledExceptionMode( UnhandledExceptionMode.CatchException );
+                AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler( CurrentDomain_UnhandledException );
+                Application.ThreadException += new ThreadExceptionEventHandler( Application_ThreadException );
 
-            Application.Run( new MainForm( ) );
+                Application.Run( new MainForm( ) );
+            }
+            catch ( Exception ex ) // Exceptions in Main() aren't caught by either Application_ThreadException or CurrentDomain_UnhandledException.
+            {
+                try
+                {
+                    ErrorHandler.HandleUncaughtException( ex, true );
+                }
+                catch ( FileNotFoundException e )
+                {
+                    if ( e.Message.Contains( "BugzScout" ) ) // Occurs when the BugzScout assembly could not be loaded.
+                        MessageBox.Show( "There was an error loading some of this program's components.\nPlease download a new version.", "SameApp", MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
+                }
+            }
         }
 
         static void Application_ThreadException( object sender, ThreadExceptionEventArgs e )
